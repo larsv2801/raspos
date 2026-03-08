@@ -213,6 +213,57 @@
         width:5dvw;
         flex-shrink:0;
     }
+
+    #grid{
+        flex-direction:row;
+        width:80dvw;
+        display:flex;
+        position:fixed;
+        bottom:10px;
+        left:10dvw;
+        justify-content: center;
+        align-items: center;
+        gap:2dvw;
+    }
+
+    #goplay{
+        background-color: rgb(195, 5, 5);
+        color:white;
+    }
+
+    #vrtmax{
+      background-color: rgb(21, 5, 195);
+      color:white;  
+    }
+
+    #vtmgo{
+     background-color: rgb(186, 5, 195);
+      color:white;     
+    }
+
+    .buttonz{
+        width:15dvw;
+        height:10dvw;
+        border-radius:10px;
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        font-size:3dvw;
+        cursor:pointer;
+        transform:scale(1.0);
+        transition:0.3s;
+        text-decoration: none;
+    }
+    a{
+        text-decoration: none;
+        border-radius:10px;
+    }
+
+    a:focus {
+        outline: 3px solid white;
+        transition:0.32s;
+        box-shadow: 0 0 20px rgba(255,255,255,0.5);
+    }
 </style>
 </head>
 <body>
@@ -235,6 +286,11 @@
         <h1 id="hours"></h1>
         <h1>:</h1>
         <h1 id="minutes"></h1>
+        <div id="grid">
+            <a tabindex="1" href="https://www.play.tv/live-kijken/"><div class="buttonz" id="goplay">go play</div></a>
+            <a tabindex="2" href="https://www.vrt.be/vrtmax/kijk/"><div class="buttonz" id="vrtmax">vrt max</div></a>
+            <a tabindex="3" href="https://vtm.be/vtmgo/live-kijken"><div class="buttonz" id="vtmgo">vtm go</div></a>
+        </div>
     </div>
     <div id="spoti">
         <button id="loginBtn">Login met Spotify</button>
@@ -474,6 +530,29 @@ setInterval(getNowPlaying, 5000);
 setInterval(refreshToken, 45 * 60 * 1000);
 
 </script>
+
+<script>
+        // Selecteer alle kaarten
+        const cards = document.querySelectorAll('#grid a');
+let currentIndex = 0;
+
+window.onload = () => {
+    if(cards.length > 0) cards[currentIndex].focus();
+};
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === "ArrowRight") {
+        currentIndex = (currentIndex + 1) % cards.length;
+        cards[currentIndex].focus();
+        e.preventDefault(); // Voorkom scrollen
+    } 
+    else if (e.key === "ArrowLeft") {
+        currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+        cards[currentIndex].focus();
+        e.preventDefault();
+    }
+});
+    </script>
 
 </body>
 </html>
