@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RaspOs</title>
+<title>Spotify Now Playing</title>
 <style>
     body{
         background-color: rgb(37, 37, 37);
@@ -22,8 +22,8 @@
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
-    width:120dvw;
-    height:120dvw;
+    width:135dvw;
+    height:135dvw;
     background-size: cover;
     background-position: center;
     filter: blur(90px) brightness(0.9);
@@ -78,6 +78,19 @@
         cursor:none;
         flex-shrink: 0;
         overflow-x: hidden;
+    }
+
+    #nowPlaying h3{
+        display:flex;
+        margin-bottom:0;
+        margin-top:0;
+        font-size: calc(5px + 1.5vw);
+    }
+    #nowPlaying strong{
+        display:flex;
+        margin-bottom:0;
+        margin-top:0;
+        font-size: calc(15px + 1.5vw);
     }
 
     h1, p, h3{
@@ -142,7 +155,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap:5dvw;
+        gap:7dvw;
         scroll-snap-align: center;
         flex: none;
         overflow-x: hidden;
@@ -176,7 +189,7 @@
     #peruur{
         display:flex;
         flex-direction: row;
-        gap:0.2dvw;
+        gap:1dvw;
         overflow-x: scroll;
         padding-left:2dvw;
         padding-right:2dvw;
@@ -185,6 +198,7 @@
         justify-content: center;
         align-items: center;
         margin-top:2dvh;
+        font-size: 1.5dvw;
     }
 
     #peruur::-webkit-scrollbar{
@@ -302,7 +316,7 @@ function base64encode(buffer) {
 }
 
 const clientId = "b935d12c439a4d45aadd7bd1f15cf42f";
-const redirectUri = "https://larsv2801.github.io/raspos";
+const redirectUri = "http://127.0.0.1:5500/index.html";
 const scopes = "user-read-currently-playing user-read-playback-state";
 
 
@@ -400,8 +414,8 @@ if (refreshed) {
     document.getElementById("nowPlaying").innerHTML = `
         <img src="${track.album.images[0].url}" width="200"><br>
         <strong>${track.name}</strong><br>
-        ${track.artists.map(a => a.name).join(", ")}<br>
-        ${track.album.name}
+        <h3>${track.artists.map(a => a.name).join(", ")}</h3><br>
+        <h3>${track.album.name}</h3>
     `;
     document.getElementById("bg").style.background = `url(${track.album.images[0].url}) center/cover no-repeat`;
     document.getElementById("bg").style.backgroundSize = `130%`;
