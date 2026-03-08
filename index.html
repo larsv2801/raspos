@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RaspOs</title>
+<style>
+    body{
+        background-color: rgb(37, 37, 37);
+        color:white;
+        font-family: arial;
+        background-size:cover;
+        width:100dvw;
+        height:100dvh;
+        padding:0;
+        margin:0;
+        overflow-x: hidden;
+    }
+
+    #bg {
+    position: fixed;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    width:120dvw;
+    height:120dvw;
+    background-size: cover;
+    background-position: center;
+    filter: blur(90px) brightness(0.9);
+    animation: turn 300s linear infinite;
+    z-index: -1;
+    cursor:none;
+    background-color: rgb(20, 20, 20);
+    overflow-x: hidden;
+}
+
+@keyframes turn {
+    from { transform: translate(-50%,-50%) rotate(0deg); }
+    to { transform: translate(-50%,-50%) rotate(360deg); }
+}
+
+
+    button{
+        /*position:fixed;
+        left:50%;
+        top:50%;
+        transform: translate(-50%,-50%);*/
+        width:30dvw;
+        height:10dvw;
+        border-radius:500px;
+        font-size:2dvw;
+        color:green;
+        background-color: white;
+        transition:0.5s;
+    }
+    button:hover{
+        width:30dvw;
+        height:10dvw;
+        border-radius:500px;
+        font-size:2dvw;
+        color:green;
+        background-color: rgb(233, 233, 233);
+        transition:0.5s;
+    }
+
+    #nowPlaying{
+        /*position:fixed;*/
+        color:white;
+        font-family: arial;
+        /*left:50%;
+        top:50%;
+        transform: translate(-50%,-50%);*/
+        text-shadow: 0px 0px 10px rgb(163, 163, 163);
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        text-align:left;
+        cursor:none;
+        flex-shrink: 0;
+        overflow-x: hidden;
+    }
+
+    h1, p, h3{
+        text-shadow: 0px 0px 15px rgb(163, 163, 163);
+    }
+
+    #nowPlaying img{
+        width:35dvw;
+        height:35dvw;
+        border-radius:15px;
+        transition: 0.3s;
+        margin-bottom:2dvw;
+        margin-left:auto;
+        margin-right:auto;
+        cursor:none;
+    }
+    #nowPlaying img:hover{
+        width:35dvw;
+        height:35dvw;
+        border-radius:10px;
+        transition: 0.3s;
+    }
+
+    #scroll{
+        width:100dvw;
+        height:100dvh;
+        display:flex;
+        flex-direction: column;
+        overflow-y: scroll;
+        scroll-snap-type: y mandatory;
+    }
+    #scroll::-webkit-scrollbar{
+        display:none;
+    }
+
+    #clock{
+        width:99dvw;
+        height:100dvh;
+        flex-shrink: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        gap:1dvw;
+        scroll-snap-align: center;
+  flex: none;
+    }
+
+    #clock h1{
+        color:white;
+        font-size:25dvw;
+        display:flex;
+        user-select: none;
+    }
+
+    #weather{
+        width:100dvw;
+        height:100dvh;
+        flex-shrink: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        display:flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap:5dvw;
+        scroll-snap-align: center;
+        flex: none;
+        overflow-x: hidden;
+    }
+
+    #weather::-webkit-scrollbar{
+        display:none;
+    }
+
+    #weather h1{
+        color:white;
+        font-size:10dvw;
+        display:flex;
+        padding:0;
+        margin:0;
+    }
+
+    #spoti{
+        width:99dvw;
+        height:100dvh;
+        flex-shrink: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        display:flex;
+        justify-content: center;
+        align-items: center;
+        gap:1dvw;
+        scroll-snap-align: center;
+  flex: none;
+    }
+
+    #peruur{
+        display:flex;
+        flex-direction: row;
+        gap:0.2dvw;
+        overflow-x: scroll;
+        padding-left:2dvw;
+        padding-right:2dvw;
+        width:95dvw;
+        height:auto;
+        justify-content: center;
+        align-items: center;
+        margin-top:2dvh;
+    }
+
+    #peruur::-webkit-scrollbar{
+        display:none;
+    }
+
+    #peruur h3{
+        font-size: 1.5dvw;
+    }
+
+    .uurweer{
+        width:5dvw;
+        flex-shrink:0;
+    }
+</style>
+</head>
+<body>
+
+<div id="bg"></div>
+<div id="scroll">
+    <div id="weather">
+        <div id="momenteel">
+            <h1 id="temp"></h1>
+            <h1 id="kans"></h1>
+        </div>
+        <div id="peruur">
+            <!--<div id="1uur" class="uurweer">
+                <h3 id="1temp"></h3>
+                <h3 id="1kans"></h3>
+            </div>-->
+        </div>
+    </div>
+    <div id="clock">
+        <h1 id="hours"></h1>
+        <h1>:</h1>
+        <h1 id="minutes"></h1>
+    </div>
+    <div id="spoti">
+        <button id="loginBtn">Login met Spotify</button>
+        <div id="nowPlaying"></div>
+    </div>
+</div>
+
+<script>
+    var hours;
+    var minutes;
+    function getclock(){
+        var date = new Date();
+        hours = date.getHours();
+        minutes = date.getMinutes();
+
+        document.getElementById("hours").innerText = hours;
+        document.getElementById("minutes").innerText = ('0' + minutes).slice(-2);
+    }
+    getclock();
+    setInterval(getclock, 500);
+
+
+
+
+    function getweather(){
+        const requestOptions = {
+            method: "GET",
+            redirect: "follow"
+        };
+
+        fetch("https://api.open-meteo.com/v1/forecast?latitude=50.9817&longitude=3.531&hourly=precipitation_probability,temperature_2m&timezone=auto&forecast_days=1", requestOptions)
+          .then((response) => response.json())
+          .then((result) => {
+            var uur = result.hourly.time[hours];
+            console.log(uur);
+
+            var currenttemp = result.hourly.temperature_2m[hours];
+            var currentkansopregen = result.hourly.precipitation_probability[hours];
+
+            document.getElementById("temp").innerText = currenttemp + "°C";
+            document.getElementById("kans").innerText = currentkansopregen + "%";
+
+
+            for(let i = 0; i < 24 - hours; i++){
+                var uurtemp = result.hourly.temperature_2m[i + hours];
+                var uurkansopregen = result.hourly.precipitation_probability[i + hours];
+
+                var div = document.createElement('div');
+                div.innerHTML = `<h3 id='${i+1}temp'>${uurtemp}°C </h3><h3 id='${i+1}kans'>${uurkansopregen}% </h3>${('0' + (i + hours)).slice(-2)} uur<h3>`;
+                div.classList.add("uurweer");
+                document.getElementById("peruur").appendChild(div);
+            }
+          })
+          .catch((error) => console.error(error));
+    }
+
+getweather();
+
+function generateRandomString(length) {
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+}
+
+async function sha256(plain) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plain);
+    return await crypto.subtle.digest("SHA-256", data);
+}
+
+function base64encode(buffer) {
+    return btoa(String.fromCharCode(...new Uint8Array(buffer)))
+        .replace(/=/g, "")
+        .replace(/\+/g, "-")
+        .replace(/\//g, "_");
+}
+
+const clientId = "b935d12c439a4d45aadd7bd1f15cf42f";
+const redirectUri = "https://larsv2801.github.io/raspos";
+const scopes = "user-read-currently-playing user-read-playback-state";
+
+
+async function startLogin() {
+    const codeVerifier = generateRandomString(64);
+    const hashed = await sha256(codeVerifier);
+    const codeChallenge = base64encode(hashed);
+
+    localStorage.setItem("code_verifier", codeVerifier);
+
+    const params = new URLSearchParams({
+    response_type: 'code',
+    client_id: clientId,
+    scope: scopes,
+    redirect_uri: redirectUri,
+    code_challenge_method: "S256",
+    code_challenge: codeChallenge,
+    show_dialog: "false"
+});
+
+
+    window.location.href = "https://accounts.spotify.com/authorize?" + params;
+}
+
+// ====== Token ophalen ======
+async function getToken(code) {
+    const codeVerifier = localStorage.getItem("code_verifier");
+    if (!codeVerifier) {
+        console.error("Geen code_verifier gevonden in localStorage!");
+        return;
+    }
+
+    const body = new URLSearchParams({
+        client_id: clientId,
+        grant_type: "authorization_code",
+        code: code,
+        redirect_uri: redirectUri,
+        code_verifier: codeVerifier
+    });
+
+    const res = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body
+    });
+
+    const data = await res.json();
+
+    if(data.access_token) {
+        localStorage.setItem("access_token", data.access_token);
+        if(data.refresh_token) localStorage.setItem("refresh_token", data.refresh_token);
+    }
+
+
+    if (data.access_token) {
+        localStorage.setItem("access_token", data.access_token);
+        getNowPlaying();
+    } else {
+        console.error("Fout bij ophalen token:", data);
+    }
+}
+
+
+async function getNowPlaying() {
+    const token = localStorage.getItem("access_token");
+    if (!token) return;
+
+    const res = await fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+        headers: { Authorization: "Bearer " + token }
+    });
+
+    if (res.status === 204) {
+        document.getElementById("nowPlaying").innerText = "Er wordt niets afgespeeld.";
+        return;
+    }
+
+    if (res.status === 401) {
+        document.getElementById("nowPlaying").innerText = "Token ongeldig. Log opnieuw in.";
+        const refreshed = await refreshToken();
+if (refreshed) {
+    return getNowPlaying();
+} else {
+    document.getElementById("nowPlaying").innerText = "Log opnieuw in.";
+    return;
+}
+    }
+
+    const data = await res.json();
+    if (!data.item) {
+        document.getElementById("nowPlaying").innerText = "Er speelt geen nummer.";
+        return;
+    }
+
+    const track = data.item;
+    document.getElementById("nowPlaying").innerHTML = `
+        <img src="${track.album.images[0].url}" width="200"><br>
+        <strong>${track.name}</strong><br>
+        ${track.artists.map(a => a.name).join(", ")}<br>
+        ${track.album.name}
+    `;
+    document.getElementById("bg").style.background = `url(${track.album.images[0].url}) center/cover no-repeat`;
+    document.getElementById("bg").style.backgroundSize = `130%`;
+    document.getElementById("bg").style.overflow = "hidden";
+    document.getElementById("bg").style.backdropFilter = `blur(200px) brightness(0.9)`;
+    document.getElementById("loginBtn").style.display = "none";
+}
+
+
+const params = new URLSearchParams(window.location.search);
+const code = params.get("code");
+
+if (code) {
+
+    window.history.replaceState({}, document.title, redirectUri);
+    getToken(code);
+}
+
+async function refreshToken() {
+    const refresh_token = localStorage.getItem("refresh_token");
+    if(!refresh_token) return false;
+
+    const body = new URLSearchParams({
+        client_id: clientId,
+        grant_type: "refresh_token",
+        refresh_token: refresh_token
+    });
+
+    const res = await fetch("https://accounts.spotify.com/api/token", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: body
+    });
+
+    const data = await res.json();
+
+    if (data.access_token) {
+    localStorage.setItem("access_token", data.access_token);
+}
+
+if (data.refresh_token) {
+    localStorage.setItem("refresh_token", data.refresh_token);
+}
+
+    return false;
+}
+
+
+
+
+document.getElementById("loginBtn").addEventListener("click", startLogin);
+refreshToken();
+getNowPlaying();
+
+setInterval(getNowPlaying, 5000);
+setInterval(refreshToken, 45 * 60 * 1000);
+
+</script>
+
+</body>
+</html>
